@@ -183,18 +183,33 @@ pub mod degen_staking {
         let mut current_time = clock.unix_timestamp as u32;
         let mut end_time = START_TIME;
         let mut total_reward = a_pool.total_reward;
-          if start_time < current_time {
+
+        if start_time < current_time {
             for i in 0..12 {
                 end_time += DAY_TIME * DAYS[i] as u32;
                 if start_time <= end_time {
                     if end_time < current_time {
-                        msg!("i: {}, total_reward: {}", i, total_reward);
+                        if DAILY_REWARD - i >5 {
                             total_reward += (DAILY_REWARD - i as u32 ) as u64 * (end_time - start_time) as u64 * DECIMAL / DAY_TIME as u64 ;
                             start_time = end_time;
+                            msg!("i: {}, total_reward: {}", i, total_reward);
+                        } else {
+                            total_reward += 5 * (end_time - start_time) as u64 * DECIMAL / DAY_TIME as u64 ;
+                            start_time = end_time;
+                            msg!("i: {}, total_reward: {}", i, total_reward);
+                        }
                     }
                     else {
-                        msg!("i: {}, total_reward {}", i, total_reward);
-                        total_reward += (DAILY_REWARD - i as u32 ) as u64 * (current_time - start_time)  as u64 * DECIMAL / DAY_TIME as u64;
+                        if DAILY_REWARD - i >5 {
+                            msg!("i: {}, total_reward {}", i, total_reward);
+                            total_reward += (DAILY_REWARD - i as u32 ) as u64 * (current_time - start_time)  as u64 * DECIMAL / DAY_TIME as u64;
+                            break;
+                        } else {
+                            msg!("i: {}, total_reward {}", i, total_reward);
+                            total_reward += 5 * (current_time - start_time)  as u64 * DECIMAL / DAY_TIME as u64;
+                            break;
+                        }
+                       
                     }
                 }
         
@@ -220,18 +235,33 @@ pub mod degen_staking {
         let mut current_time = clock.unix_timestamp as u32;
         let mut end_time = START_TIME;
         let mut total_reward = a_pool.total_reward;
+
         if start_time < current_time {
             for i in 0..12 {
                 end_time += DAY_TIME * DAYS[i] as u32;
                 if start_time <= end_time {
                     if end_time < current_time {
-                        msg!("i: {}, total_reward: {}", i, total_reward);
+                        if DAILY_REWARD - i >5 {
                             total_reward += (DAILY_REWARD - i as u32 ) as u64 * (end_time - start_time) as u64 * DECIMAL / DAY_TIME as u64 ;
                             start_time = end_time;
+                            msg!("i: {}, total_reward: {}", i, total_reward);
+                        } else {
+                            total_reward += 5 * (end_time - start_time) as u64 * DECIMAL / DAY_TIME as u64 ;
+                            start_time = end_time;
+                            msg!("i: {}, total_reward: {}", i, total_reward);
+                        }
                     }
                     else {
-                        msg!("i: {}, total_reward {}", i, total_reward);
-                        total_reward += (DAILY_REWARD - i as u32 ) as u64 * (current_time - start_time)  as u64 * DECIMAL / DAY_TIME as u64;
+                        if DAILY_REWARD - i >5 {
+                            msg!("i: {}, total_reward {}", i, total_reward);
+                            total_reward += (DAILY_REWARD - i as u32 ) as u64 * (current_time - start_time)  as u64 * DECIMAL / DAY_TIME as u64;
+                            break;
+                        } else {
+                            msg!("i: {}, total_reward {}", i, total_reward);
+                            total_reward += 5 * (current_time - start_time)  as u64 * DECIMAL / DAY_TIME as u64;
+                            break;
+                        }
+                       
                     }
                 }
         
