@@ -10,7 +10,8 @@ mod constants {
 
     pub const ADMIN_KEY: Pubkey = anchor_lang::solana_program::pubkey!("3ttYrBAp5D2sTG2gaBjg8EtrZecqBQSBuFRhsqHWPYxX"); 
     pub const COLLECTION_KEY: Pubkey = anchor_lang::solana_program::pubkey!("DyKv1WTgSyyPuHLi3SmFKMcoUDDif2KvRr55N8ZcU2oV");
-
+    
+    pub const DECIMAL: u64 = 1000000000;
     pub const DAY_TIME: u32 = 86400;
     pub const STATISTIC_SEEDS: &str = "statistic";
     pub const POOL_SEEDS: &str = "pool";
@@ -18,6 +19,7 @@ mod constants {
 
     pub const START_TIME: u32 = 1681701520; // Mon Apr 17 2023 12:18:40
     pub const DAYS: [u8;13] = [30,31,30,31,31,30,31,30,31,30,29,31,30];
+    pub const DAILY_REWARD : u32 = 10;
 
 }
 
@@ -181,27 +183,18 @@ pub mod degen_staking {
         let mut current_time = clock.unix_timestamp as u32;
         let mut end_time = START_TIME;
         let mut total_reward = a_pool.total_reward;
-        if start_time < current_time {
+          if start_time < current_time {
             for i in 0..12 {
                 end_time += DAY_TIME * DAYS[i] as u32;
                 if start_time <= end_time {
                     if end_time < current_time {
-                        if total_reward >5 {
-                            total_reward = total_reward - i as u64;
-                        } else {
-                            total_reward = 5
-                        }
-                        start_time = end_time;
                         msg!("i: {}, total_reward: {}", i, total_reward);
+                            total_reward += (DAILY_REWARD - i as u32 ) as u64 * (end_time - start_time) as u64 * DECIMAL / DAY_TIME as u64 ;
+                            start_time = end_time;
                     }
                     else {
-                         if total_reward >5 {
-                            total_reward = total_reward - i as u64;
-                        } else {
-                            total_reward = 5
-                        }
                         msg!("i: {}, total_reward {}", i, total_reward);
-                        break;
+                        total_reward += (DAILY_REWARD - i as u32 ) as u64 * (current_time - start_time)  as u64 * DECIMAL / DAY_TIME as u64;
                     }
                 }
         
@@ -232,22 +225,13 @@ pub mod degen_staking {
                 end_time += DAY_TIME * DAYS[i] as u32;
                 if start_time <= end_time {
                     if end_time < current_time {
-                        if total_reward >5 {
-                            total_reward = total_reward - i as u64;
-                        } else {
-                            total_reward = 5
-                        }
-                        start_time = end_time;
                         msg!("i: {}, total_reward: {}", i, total_reward);
+                            total_reward += (DAILY_REWARD - i as u32 ) as u64 * (end_time - start_time) as u64 * DECIMAL / DAY_TIME as u64 ;
+                            start_time = end_time;
                     }
                     else {
-                         if total_reward >5 {
-                            total_reward = total_reward - i as u64;
-                        } else {
-                            total_reward = 5
-                        }
                         msg!("i: {}, total_reward {}", i, total_reward);
-                        break;
+                        total_reward += (DAILY_REWARD - i as u32 ) as u64 * (current_time - start_time)  as u64 * DECIMAL / DAY_TIME as u64;
                     }
                 }
         
