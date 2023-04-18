@@ -21,8 +21,8 @@ mod constants {
     pub const POOL_DATA_SEEDS: &str = "pool data";
 
     pub const START_TIME: u32 = 1681701520; // Mon Apr 17 2023 12:18:40
-    pub const DAYS: [u8;13] = [30,31,30,31,31,30,31,30,31,30,29,31,30];
-    pub const DAILY_REWARD : u32 = 10;
+    pub const DAYS: [u8;13] = [30, 31, 30, 31, 31, 30, 31, 30, 31, 30, 29, 31, 30];
+    pub const DAILY_REWARD: u32 = 10;
 
 }
 
@@ -76,7 +76,7 @@ pub mod degen_staking {
                 authority: a_user.to_account_info(),
             },
         );
-        token::approve(cpi_ctx, 1)?;
+        token:: approve(cpi_ctx, 1)?;
 
         let instruction = mpl_token_metadata::instruction::freeze_delegated_account(
             a_metadata_id.to_account_info().key(),
@@ -180,9 +180,10 @@ pub mod degen_staking {
                 authority: a_user.to_account_info(),
             },
         );
-        token::revoke(cpi_ctx)?;
+        token ::revoke(cpi_ctx)?;
 
         a_statistic.staked_count -= 1;
+        
         a_pool.staked_count -= 1 ;
 
         let mut start_time = a_pool_data.start_time;
@@ -195,7 +196,7 @@ pub mod degen_staking {
                 end_time += DAY_TIME * DAYS[i] as u32;
                 if start_time <= end_time {
                     if end_time < current_time {
-                        if DAILY_REWARD - i as u32 >5 {
+                        if DAILY_REWARD >5 + i as u32  {
                             total_reward += (DAILY_REWARD - i as u32 ) as u64 * (end_time - start_time) as u64 * DECIMAL / DAY_TIME as u64 ;
                             start_time = end_time;
                             msg!("i: {}, total_reward: {}", i, total_reward);
@@ -206,7 +207,7 @@ pub mod degen_staking {
                         }
                     }
                     else {
-                        if DAILY_REWARD - i as u32 >5 {
+                        if DAILY_REWARD >5 + i as u32  {
                             msg!("i: {}, total_reward {}", i, total_reward);
                             total_reward += (DAILY_REWARD - i as u32 ) as u64 * (current_time - start_time)  as u64 * DECIMAL / DAY_TIME as u64;
                             break;
@@ -231,8 +232,10 @@ pub mod degen_staking {
          };
          let cpi_token_ctx = CpiContext::new(a_token_program.to_account_info().clone(), cpi_token_accounts);
 
-        token :: transfer(cpi_token_ctx, total_reward as u64 );
+        token:: transfer(cpi_token_ctx, total_reward as u64 );
         a_statistic.token_count -= total_reward;
+        a_statistic.staked_count -= 1;
+        a_pool.staked_count -= 1 ;
 
         Ok(())
     }
@@ -247,8 +250,7 @@ pub mod degen_staking {
         let a_token_program = &ctx.accounts.token_program;
         let clock = clock::Clock::get().unwrap();
         
-        a_statistic.staked_count -= 1;
-        a_pool.staked_count -= 1 ;
+       
 
         let mut start_time = a_pool_data.start_time;
         let mut current_time = clock.unix_timestamp as u32;
@@ -260,7 +262,7 @@ pub mod degen_staking {
                 end_time += DAY_TIME * DAYS[i] as u32;
                 if start_time <= end_time {
                     if end_time < current_time {
-                        if DAILY_REWARD - i as u32 >5 {
+                        if DAILY_REWARD >5 + i as u32 {
                             total_reward += (DAILY_REWARD - i as u32 ) as u64 * (end_time - start_time) as u64 * DECIMAL / DAY_TIME as u64 ;
                             start_time = end_time;
                             msg!("i: {}, total_reward: {}", i, total_reward);
@@ -271,7 +273,7 @@ pub mod degen_staking {
                         }
                     }
                     else {
-                        if DAILY_REWARD - i as u32 >5 {
+                        if DAILY_REWARD >5 + i as u32 {
                             msg!("i: {}, total_reward {}", i, total_reward);
                             total_reward += (DAILY_REWARD - i as u32 ) as u64 * (current_time - start_time)  as u64 * DECIMAL / DAY_TIME as u64;
                             break;
@@ -303,7 +305,7 @@ pub mod degen_staking {
 
     }
 
-    pub fn token_transfer(ctx:Context<TokenTransferContext>, amount : u64) -> Result<()> {
+    pub fn token_transfer(ctx:Context<TokenTransferContext>, amount: u64) -> Result<()> {
         let a_admin = &ctx.accounts.admin;
         let a_statistic = &mut ctx.accounts.statistic;
         let a_ata_from = &mut ctx.accounts.ata_from;
@@ -317,11 +319,15 @@ pub mod degen_staking {
          };
          let cpi_ctx = CpiContext::new(a_token_program.to_account_info().clone(), cpi_accounts);
 
-        token :: transfer(cpi_ctx, amount as u64 );
+        token:: transfer(cpi_ctx, amount as u64 );
         a_statistic.token_count += amount;
 
         Ok(())
     }
+
+    // pub fn CheckedSub(sub1: u32 ,sub2: u32 ) -> Option<u32> {
+    //     return sub1.checked_sub(sub2)
+    // }
 
 }
 
